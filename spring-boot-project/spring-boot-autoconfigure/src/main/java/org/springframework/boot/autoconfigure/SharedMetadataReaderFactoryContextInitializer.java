@@ -39,6 +39,7 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 /**
+ * 初始化元数据读取和缓存的后置处理器 CachingMetadataReaderFactoryPostProcessor。
  * {@link ApplicationContextInitializer} to create a shared
  * {@link CachingMetadataReaderFactory} between the
  * {@link ConfigurationClassPostProcessor} and Spring Boot.

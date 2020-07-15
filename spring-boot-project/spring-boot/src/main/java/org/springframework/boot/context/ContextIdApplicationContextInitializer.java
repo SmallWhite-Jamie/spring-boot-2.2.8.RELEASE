@@ -26,6 +26,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.StringUtils;
 
 /**
+ * 设置spring容器ID，默认是application，可以通过 spring.application.name 属性设置
+ *
+ *
  * {@link ApplicationContextInitializer} that sets the Spring
  * {@link ApplicationContext#getId() ApplicationContext ID}. The
  * {@code spring.application.name} property is used to create the ID. If the property is

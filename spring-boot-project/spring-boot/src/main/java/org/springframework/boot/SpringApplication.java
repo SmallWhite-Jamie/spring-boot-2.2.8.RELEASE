@@ -267,10 +267,39 @@ public class SpringApplication {
 	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
+		// 保存主配置类集合
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+
+		// 根据classpath下的jar包，是否存在指定类，来判断具体的 webApplicationType
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+
+
+		/*
+		 * 从 spring.factories 加载 ApplicationContextInitializer(一般在容器刷新之前调用) spring初始接口 的实现类，
+		 * 此处，spring-boot spring.factories 5个 + spring-boot-autoconfigure spring.factories 2个 一共注册7个，主要功能如下描述：
+		 *
+		 * 1、ConfigurationWarningsApplicationContextInitializer：用来报告Spring容器的一些常见的错误配置的。
+		 * 2、ContextIdApplicationContextInitializer：设置spring容器ID，默认是application，可以通过 spring.application.name 属性设置。
+		 * 3、DelegatingApplicationContextInitializer：初始化以 environment 环境属性 "context.initializer.classes" 形式指定的初始化器。
+		 * 4、RSocketPortInfoApplicationContextInitializer：初始化方法调用后，会注册一个监听器(监听RSocketServerInitializedEvent事件)，
+		 *    设置 local.rsocket.server.port 属性。
+		 * 5、ServerPortInfoApplicationContextInitializer：现了初始化接口和事件监听接口，监听 WebServerInitializedEvent web 容器初始化完成事件，
+		 *   将容器的实际运行端口设置到 environment 的 local.server.port 属性中。
+		 * -----------------------------------------------------------------------
+		 * 6、SharedMetadataReaderFactoryContextInitializer：初始化元数据读取和缓存的后置处理器 CachingMetadataReaderFactoryPostProcessor。????
+		 * 7、ConditionEvaluationReportLoggingListener：注册监听器，监听ConditionEvaluationReport日志输出
+		 */
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+
+		/*
+		 * 从 spring.factories 加载ApplicationListener的实现类，创建监听器对象，监听具体的事件
+		 * 此处，spring-boot spring.factories 10个 + spring-boot-autoconfigure spring.factories 1个 一共注册11个
+		 * 举例列举几个：
+		 * ConfigFileApplicationListener：读取应用的配置文件并add到Environment的PropertySources列表里，读取路径：[file:./config/, file:./, classpath:/config/, classpath:/]
+		 */
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+
+		// 保存主启动类的引用
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 

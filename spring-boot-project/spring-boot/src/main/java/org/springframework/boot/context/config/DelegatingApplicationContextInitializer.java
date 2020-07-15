@@ -32,6 +32,11 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ *
+ * 初始化 environment 环境属性 "context.initializer.classes" 指定的初始化器
+ * 并依次调用它们的 initialize 方法，完成对容器的初始化
+ *
+ *
  * {@link ApplicationContextInitializer} that delegates to other initializers that are
  * specified under a {@literal context.initializer.classes} environment property.
  *
