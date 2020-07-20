@@ -32,7 +32,8 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 
 /**
- * 反应式数据传输 RSocket 介绍： https://developer.ibm.com/zh/articles/j-using-rsocket-for-reactive-data-transfer/
+ * 反应式数据传输 RSocket 介绍：
+ * https://developer.ibm.com/zh/articles/j-using-rsocket-for-reactive-data-transfer/
  * 注册一个监听器(监听RSocketServerInitializedEvent事件)，设置 local.rsocket.server.port 属性
  *
  * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the

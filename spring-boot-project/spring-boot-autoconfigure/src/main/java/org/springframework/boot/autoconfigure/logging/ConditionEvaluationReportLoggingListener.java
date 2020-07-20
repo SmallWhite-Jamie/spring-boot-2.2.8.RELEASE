@@ -34,8 +34,8 @@ import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
 
 /**
- * 会注册一个ConditionEvaluationReportListener监听器,将 ConditionEvaluationReport 写入到日志，使用DEBUG级别输出。
- * 程序崩溃报告会触发一个消息输出，建议用户使用调试模式显示报告。
+ * 会注册一个ConditionEvaluationReportListener监听器,将 ConditionEvaluationReport
+ * 写入到日志，使用DEBUG级别输出。 程序崩溃报告会触发一个消息输出，建议用户使用调试模式显示报告。
  *
  * {@link ApplicationContextInitializer} that writes the {@link ConditionEvaluationReport}
  * to the log. Reports are logged at the {@link LogLevel#DEBUG DEBUG} level. A crash

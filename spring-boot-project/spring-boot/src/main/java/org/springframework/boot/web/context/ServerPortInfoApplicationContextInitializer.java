@@ -34,8 +34,9 @@ import org.springframework.util.StringUtils;
 
 /**
  *
- * ServerPortInfoApplicationContextInitializer 实现了初始化接口和事件监听接口，监听 WebServerInitializedEvent web 容器初始化完成事件，
- * 将容器的实际运行端口设置到 environment 的 local.server.port 属性中，使用时，可以用 @Value 或者 Environment的方式注入
+ * ServerPortInfoApplicationContextInitializer 实现了初始化接口和事件监听接口，监听
+ * WebServerInitializedEvent web 容器初始化完成事件， 将容器的实际运行端口设置到 environment 的 local.server.port
+ * 属性中，使用时，可以用 @Value 或者 Environment的方式注入
  *
  * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
  * ports that {@link WebServer} servers are actually listening on. The property

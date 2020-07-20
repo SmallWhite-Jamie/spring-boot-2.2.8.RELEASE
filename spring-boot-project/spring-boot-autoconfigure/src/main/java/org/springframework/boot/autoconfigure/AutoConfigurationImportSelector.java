@@ -60,8 +60,8 @@ import org.springframework.util.StringUtils;
 /**
  *
  * 将所有符合条件的 @Configuration 配置加载到当前IoC容器中。而最主要的还是借助于 Spring 框架一的一个工具类：
- * SpringFactoriesLoader 将 META-INF/spring.factories加载配置，spring.factories 文件是一个典型的properties配置文件，
- * 配置的格式仍然是Key = Value 的形式，中不过 Key 和 Value 都是Java的完整类名
+ * SpringFactoriesLoader 将 META-INF/spring.factories加载配置，spring.factories
+ * 文件是一个典型的properties配置文件， 配置的格式仍然是Key = Value 的形式，中不过 Key 和 Value 都是Java的完整类名
  *
  * {@link DeferredImportSelector} to handle {@link EnableAutoConfiguration
  * auto-configuration}. This class can also be subclassed if a custom variant of
@@ -107,7 +107,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	/**
 	 *
-	 * 从spring.factories获取解析自动配置类信息，org.springframework.boot.autoconfigure.EnableAutoConfiguration 为key的配置类信息
+	 * 从spring.factories获取解析自动配置类信息，org.springframework.boot.autoconfigure.EnableAutoConfiguration
+	 * 为key的配置类信息
 	 *
 	 * Return the {@link AutoConfigurationEntry} based on the {@link AnnotationMetadata}
 	 * of the importing {@link Configuration @Configuration} class.
@@ -175,17 +176,17 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	}
 
 	/**
-	 * 获取 AutoConfiguration 的全路路径名
-	 * Return the auto-configuration class names that should be considered. By default
-	 * this method will load candidates using {@link SpringFactoriesLoader} with
-	 * {@link #getSpringFactoriesLoaderFactoryClass()}.
+	 * 获取 AutoConfiguration 的全路路径名 Return the auto-configuration class names that should
+	 * be considered. By default this method will load candidates using
+	 * {@link SpringFactoriesLoader} with {@link #getSpringFactoriesLoaderFactoryClass()}.
 	 * @param metadata the source metadata
 	 * @param attributes the {@link #getAttributes(AnnotationMetadata) annotation
 	 * attributes}
 	 * @return a list of candidate configurations
 	 */
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
-		// 使用 SpringFactoriesLoader 加载 spring.factories 中所有 org.springframework.boot.autoconfigure.EnableAutoConfiguration 对应的自动配置类
+		// 使用 SpringFactoriesLoader 加载 spring.factories 中所有
+		// org.springframework.boot.autoconfigure.EnableAutoConfiguration 对应的自动配置类
 		List<String> configurations = SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(),
 				getBeanClassLoader());
 		Assert.notEmpty(configurations, "No auto configuration classes found in META-INF/spring.factories. If you "
@@ -405,7 +406,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		}
 
 		/**
-		 * spring ConfigurationClassPostProcessor 处理器调用ConfigurationClassParser 的 parse 方法, 进而调用 此处的process方法处理自动配置
+		 * spring ConfigurationClassPostProcessor 处理器调用ConfigurationClassParser 的 parse
+		 * 方法, 进而调用 此处的process方法处理自动配置
 		 * @param annotationMetadata
 		 * @param deferredImportSelector
 		 */
@@ -415,7 +417,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 					() -> String.format("Only %s implementations are supported, got %s",
 							AutoConfigurationImportSelector.class.getSimpleName(),
 							deferredImportSelector.getClass().getName()));
-			// 从spring.factories获取解析自动配置类信息，org.springframework.boot.autoconfigure.EnableAutoConfiguration 为key的配置类信息
+			// 从spring.factories获取解析自动配置类信息，org.springframework.boot.autoconfigure.EnableAutoConfiguration
+			// 为key的配置类信息
 			AutoConfigurationEntry autoConfigurationEntry = ((AutoConfigurationImportSelector) deferredImportSelector)
 					.getAutoConfigurationEntry(getAutoConfigurationMetadata(), annotationMetadata);
 			this.autoConfigurationEntries.add(autoConfigurationEntry);
