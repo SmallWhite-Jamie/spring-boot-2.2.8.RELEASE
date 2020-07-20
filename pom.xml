@@ -54,7 +54,7 @@
 						<executions>
 							<execution>
 								<id>checkstyle-validation</id>
-								<phase>validate</phase>
+								<phase>deploy</phase>
 								<configuration>
 									<skip>${disable.checks}</skip>
 									<configLocation>src/checkstyle/checkstyle.xml</configLocation>
@@ -69,7 +69,7 @@
 							</execution>
 							<execution>
 								<id>nohttp-checkstyle-validation</id>
-								<phase>validate</phase>
+								<phase>deploy</phase>
 								<configuration>
 									<skip>${disable.checks}</skip>
 									<configLocation>src/checkstyle/nohttp-checkstyle.xml</configLocation>
@@ -93,7 +93,7 @@
 						<version>${spring-javaformat.version}</version>
 						<executions>
 							<execution>
-								<phase>validate</phase>
+								<phase>deploy</phase>
 								<configuration>
 									<skip>${disable.checks}</skip>
 								</configuration>
