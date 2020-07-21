@@ -289,7 +289,7 @@ public class SpringApplication {
 		 * local.server.port 属性中。
 		 * -----------------------------------------------------------------------
 		 * 6、SharedMetadataReaderFactoryContextInitializer：初始化元数据读取和缓存的后置处理器
-		 * CachingMetadataReaderFactoryPostProcessor。????
+		 * CachingMetadataReaderFactoryPostProcessor。TODO ?????
 		 * 7、ConditionEvaluationReportLoggingListener：注册监听器，
 		 * 监听ConditionEvaluationReport日志输出
 		 */
@@ -324,35 +324,66 @@ public class SpringApplication {
 	}
 
 	/**
+	 *
 	 * Run the Spring application, creating and refreshing a new
 	 * {@link ApplicationContext}.
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
+		// 计时组件 StopWatch
 		StopWatch stopWatch = new StopWatch();
+		// 开始计时
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
+
+		//一、-----------------------创建容器前的环境准备-----------------------start
+
+		// 配置系统是否开启 Headless mode
+		// Headless模式是系统的一种配置模式。在系统可能缺少显示设备、键盘或鼠标这些外设的情况下可以使用该模式。
 		configureHeadlessProperty();
+
+		// 从spring.factories中获取 SpringApplicationRunListener 的实现类 EventPublishingRunListener，
+		// 在springboot上下文刷新之前发布事件
 		SpringApplicationRunListeners listeners = getRunListeners(args);
+		// 发布容器启动相关的事件：ApplicationStartingEvent默认监听者有，
+		// LoggingApplicationListener、DelegatingApplicationListener、
+		// BackgroundPreinitializer、LiquibaseServiceLocatorApplicationListener
 		listeners.starting();
 		try {
+			// 对启动的参数args创建包装对象DefaultApplicationArguments方便使用
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+			// 准备environment，并发布ApplicationEnvironmentPreparedEvent事件，主要监听器有
+			// ConfigFileApplicationListener 加载配置文件，以及一些编码、日志监听等
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
+			// 配置environment中的spring.beaninfo.ignore属性 TODO ???
 			configureIgnoreBeanInfo(environment);
+			// 打印 Banner
 			Banner printedBanner = printBanner(environment);
+		//-----------------------创建容器前的环境准备-----------------------end
+
+			// 二、创建容器例如：web环境下 AnnotationConfigServletWebServerApplicationContext
 			context = createApplicationContext();
+
+			// 三、容器刷新前的准备工作
+			// 从spring.factories中加载所有异常报告处理器，容器发生异常时候进行处理，例如格式化打印异常信息
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
 			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
+
+			// 四、刷新容器
 			refreshContext(context);
+
+			// 五、刷新之后回调，空实现
 			afterRefresh(context, applicationArguments);
+			// 计时结束
 			stopWatch.stop();
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
 			}
 			listeners.started(context);
+			// 六、回调所有Runners
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
