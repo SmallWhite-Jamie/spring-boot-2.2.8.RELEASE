@@ -24,6 +24,18 @@ import org.springframework.web.SpringServletContainerInitializer;
 import org.springframework.web.WebApplicationInitializer;
 
 /**
+ *
+ * ServletContextInitializer 主要被RegistrationBean实现用于往ServletContext容器中注册Servlet,Filter或者EventListener，
+ * 在SpringBoot应用中，嵌入式的 Servlet 3.0+ 容器不会直接使用 ServletContainerInitializer 和 WebApplicationInitializer，
+ * 即通过以上两个接口实现的 Servlet、Filter、Listener 配置都是无效的，这是为了防止第三方代码的设计损坏应用程序
+ *
+ * 对比 spring mvc 的 WebApplicationInitializer：在servlet容器启动时会被间接调用，
+ * servlet3.0 spi
+ *     1> 方式调用 javax.servlet.ServletContainerInitializer 的实现类SpringServletContainerInitializer
+ *        2> 所有WebApplicationInitializer的实现类
+ *
+ *
+ *
  * Interface used to configure a Servlet 3.0+ {@link ServletContext context}
  * programmatically. Unlike {@link WebApplicationInitializer}, classes that implement this
  * interface (and do not implement {@link WebApplicationInitializer}) will <b>not</b> be

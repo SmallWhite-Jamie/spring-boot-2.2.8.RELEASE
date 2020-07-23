@@ -146,10 +146,15 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		}
 	}
 
+	/**
+	 * 覆盖父类的onRefresh方法，在这里创建web服务器例如tomcat
+	 */
 	@Override
 	protected void onRefresh() {
+		// 调用父类方法onRefresh，初始化 ResourceBundleThemeSource 设置应用全局的外观CSS主题文件之类。
 		super.onRefresh();
 		try {
+			// 创建 web server
 			createWebServer();
 		}
 		catch (Throwable ex) {
@@ -220,6 +225,12 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		return this::selfInitialize;
 	}
 
+	/**
+	 * 在servlet容器启动后会回调此方法，注册Servlet,Filter或者EventListener
+	 * 例如：DispatcherServletRegistrationBean 对应的 DispatcherServlet 在此时被注册进servlet容器中
+	 * @param servletContext
+	 * @throws ServletException
+	 */
 	private void selfInitialize(ServletContext servletContext) throws ServletException {
 		prepareWebApplicationContext(servletContext);
 		registerApplicationScope(servletContext);
