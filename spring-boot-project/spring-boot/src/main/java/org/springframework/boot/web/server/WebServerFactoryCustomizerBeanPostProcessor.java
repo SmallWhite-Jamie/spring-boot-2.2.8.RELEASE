@@ -31,6 +31,8 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.Assert;
 
 /**
+ * WebServerFactory 自定义 后置处理器，用来加载WebServerFactory的自定义
+ *
  * {@link BeanPostProcessor} that applies all {@link WebServerFactoryCustomizer} beans
  * from the bean factory to {@link WebServerFactory} beans.
  *
