@@ -452,7 +452,7 @@ public class SpringApplication {
 		if (this.lazyInitialization) {
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
 		}
-		// 加载配置类并以BeanDefinition形式load到容器中
+		// 加载主配置类并以BeanDefinition形式load到容器中
 		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
 		load(context, sources.toArray(new Object[0]));

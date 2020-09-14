@@ -71,6 +71,10 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ *
+ *
+ * SpringApplication run 方法会在创建容器之前发布一个 ApplicationEnvironmentPreparedEvent 事件，并
+ * 携带 environment 对象 和 SpringApplication 对象，ConfigFileApplicationListener 会监听到这个事件进行处理。
  * {@link EnvironmentPostProcessor} that configures the context environment by loading
  * properties from well known file locations. By default properties will be loaded from
  * 'application.properties' and/or 'application.yml' files in the following locations:
@@ -171,6 +175,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				|| ApplicationPreparedEvent.class.isAssignableFrom(eventType);
 	}
 
+	/**
+	 * 监听事件，进行业务处理。
+	 */
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationEnvironmentPreparedEvent) {
@@ -181,6 +188,11 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 		}
 	}
 
+	/**
+	 * 从 factories 中获取 EnvironmentPostProcessor 的实现类，并将自身(this)添加到处理器列表中，加载配置细节我们详细分析
+	 * 当前的this对象的 postProcessEnvironment 方法。重点关注 addPropertySources 方法如何解析配置文件，并将配置文件信息
+	 * 加载到 spring environment 中去。
+	 */
 	private void onApplicationEnvironmentPreparedEvent(ApplicationEnvironmentPreparedEvent event) {
 		List<EnvironmentPostProcessor> postProcessors = loadPostProcessors();
 		postProcessors.add(this);
@@ -211,7 +223,15 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 	 * @see #addPostProcessors(ConfigurableApplicationContext)
 	 */
 	protected void addPropertySources(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
+		// 在 systemEnvironment 属性源后面，添加一个 RandomValuePropertySource 随机值属性源, xxx=${random.value}
 		RandomValuePropertySource.addToEnvironment(environment);
+		/* 重点方法：
+		 * 1、创建一个 Loader 对象，设置全局一些变量：
+		 *     placeholdersResolver = PropertySourcesPlaceholdersResolver
+		 *     resourceLoader = DefaultResourceLoader
+		 *     propertySourceLoaders = PropertiesPropertySourceLoader properties文件加载器、YamlPropertySourceLoader Yaml 文件加载器
+		 * 2、调用 load() 加载配置信息，重点分析
+		 */
 		new Loader(environment, resourceLoader).load();
 	}
 
@@ -327,18 +347,26 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 						this.processedProfiles = new LinkedList<>();
 						this.activatedProfiles = false;
 						this.loaded = new LinkedHashMap<>();
+						// 一、初始化 profiles：
+						// 0、null profile
+						// 1、spring.profiles.active 中指定：--spring.profiles.active=test
+						// 2、 spring.profiles.include 中指定 --spring.profiles.include: testDb,testFtp,testRedis
+						// 3、如果上面两步都为空，则创建一个 default profile
 						initializeProfiles();
 						while (!this.profiles.isEmpty()) {
 							Profile profile = this.profiles.poll();
 							if (isDefaultProfile(profile)) {
 								addProfileToEnvironment(profile.getName());
 							}
-							load(profile, this::getPositiveProfileFilter,
-									addToLoaded(MutablePropertySources::addLast, false));
+							// 二、1)加载指定profile的配置信息添加到 全局变量Map<Profile, MutablePropertySources>中
+							load(profile, this::getPositiveProfileFilter, addToLoaded(MutablePropertySources::addLast, false));
 							this.processedProfiles.add(profile);
 						}
+						// 二、2)加载指定profile的配置信息添加到 全局变量Map<Profile, MutablePropertySources>中
 						load(null, this::getNegativeProfileFilter, addToLoaded(MutablePropertySources::addFirst, true));
+						// 三、将全局变量Map<Profile, MutablePropertySources>中的配置信息添加到 spring environment 中
 						addLoadedPropertySources();
+						// 四、设置 environment 的 activeProfiles
 						applyActiveProfiles(defaultProperties);
 					});
 		}
@@ -437,6 +465,12 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			};
 		}
 
+		/**
+		 * 加载指定的 profile
+		 * @param profile 待加载的profile
+		 * @param filterFactory 加载器加载的profile后会得到对应的Document，filterFactory会创建一个DocumentFilter，来过滤匹配Document
+		 * @param consumer 应用/处理/消费 Document, 配置信息添加到 Map<Profile, MutablePropertySources> 中
+		 */
 		private void load(Profile profile, DocumentFilterFactory filterFactory, DocumentConsumer consumer) {
 			getSearchLocations().forEach((location) -> {
 				boolean isFolder = location.endsWith("/");
